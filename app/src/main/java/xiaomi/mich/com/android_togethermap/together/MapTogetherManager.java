@@ -10,7 +10,6 @@ import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
@@ -24,7 +23,6 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -64,56 +62,6 @@ public class MapTogetherManager {
     }
 
     // ########### 设置当地图加载完成事件 start ######################
-
-    /**
-     * 更新聚合网点显示
-     * @param markerMap
-     */
-    public void onMapLoadedUpdateMarkerText(final List<DotInfo> allDotsList, final Map<String, Marker> markerMap) {
-        // 循环遍历更新聚合marker显示文案
-        if (togDotInfoMap != null && togDotInfoMap.entrySet().size() > 0) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.i(TAG, "开始循环遍历,执行更新网点text内容的操作...");
-                    Iterator<Map.Entry<String, TogDotInfo>> entryIterator = togDotInfoMap.entrySet().iterator();
-                    while (entryIterator.hasNext()) {
-                        Map.Entry<String, TogDotInfo> entryTog = entryIterator.next();
-                        TogDotInfo togDotInfo = entryTog.getValue();
-                        List<Marker> listMarker = togDotInfo.getmClusterItems();
-                        if (listMarker != null && listMarker.size() > 0) {
-                            int count = 0;
-                            for (Marker marker : listMarker) {
-                                DotInfo dotInfo = (DotInfo) marker.getObject();
-                                for (int i = 0; i < allDotsList.size(); i ++) {
-                                    if (i < allDotsList.size()) {
-                                        if (allDotsList.get(i).getDotId().equals(dotInfo.getDotId())) {
-                                            if (i < allDotsList.size()) {
-                                                marker.setObject(allDotsList.get(i));
-                                            }
-                                        }
-                                    }
-                                }
-                                count = count + ((DotInfo)marker.getObject()).getCarTotal();
-                            }
-                            togDotInfo.setCarCount(count);
-                            if (togDotInfo.getTextView() != null) {
-                                String pre = togDotInfo.getTextView().getText().toString();
-
-                                if (!TextUtils.isEmpty(pre) && !pre.trim().equals(togDotInfo.getCarCount() + "辆")) {
-                                    togMarkerMap.get(entryTog.getKey()).remove();
-                                    togMarkerMap.remove(entryTog.getKey());
-                                    addTogDotInfoToMap(entryTog.getKey(), entryTog.getValue());
-                                }
-                            }
-                        }
-                    }
-                }
-            }).start();
-        }
-    }
-
-
 
     Object lockObject = new Object();
     /**
@@ -158,13 +106,11 @@ public class MapTogetherManager {
         TogDotInfo togDotInfo = getCluster(point);
         if (togDotInfo != null) {
             togDotInfo.addClusterItem(marker);
-            // 更新聚合网点的车辆个数,网点个数
-            togDotInfo.setCarCount(togDotInfo.getCarCount() + dotInfo.getCarTotal());
+            // 更新聚合网点个数
             togDotInfo.setDotCount(togDotInfo.getDotCount() + 1);
         } else {
             togDotInfo = new TogDotInfo(point, latLng);
-            // 更新聚合网点的车辆个数
-            togDotInfo.setCarCount(dotInfo.getCarTotal());
+            // 更新聚合网点个数
             togDotInfo.setDotCount(1);
             togDotInfo.addClusterItem(marker);
             togDotInfoMap.put(dotInfo.getDotId() + SystemClock.currentThreadTimeMillis(), togDotInfo);
@@ -190,13 +136,13 @@ public class MapTogetherManager {
      **/
     private BitmapDescriptor getBitmapDes(final TogDotInfo togDotInfo) {
         TextView textView = new TextView(mContext);
-        String tile = String.valueOf(togDotInfo.getCarCount());
-        textView.setText(tile + "辆");
+        String tile = String.valueOf(togDotInfo.getDotCount());
+        textView.setText(tile + "");
         textView.setGravity(Gravity.CENTER);
 
         textView.setTextColor(Color.BLACK);
         textView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 15);
-        textView.setBackgroundDrawable(getDrawAble(togDotInfo.getCarCount()));
+        textView.setBackgroundDrawable(getDrawAble(togDotInfo.getDotCount()));
         togDotInfo.setTextView(textView);
         return BitmapDescriptorFactory.fromView(textView);
     }

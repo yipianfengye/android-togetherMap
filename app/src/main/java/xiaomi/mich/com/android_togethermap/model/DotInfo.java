@@ -10,7 +10,6 @@ import java.util.List;
 public class DotInfo {
 
     private String dotId;
-    private int carTotal;
     private double dotLat;
     private double dotLon;
 
@@ -21,14 +20,6 @@ public class DotInfo {
 
     public void setDotId(String dotId) {
         this.dotId = dotId;
-    }
-
-    public int getCarTotal() {
-        return carTotal;
-    }
-
-    public void setCarTotal(int carTotal) {
-        this.carTotal = carTotal;
     }
 
     public double getDotLat() {
