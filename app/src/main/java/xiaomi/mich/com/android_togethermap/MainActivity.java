@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -21,14 +22,32 @@ import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import xiaomi.mich.com.android_togethermap.model.DotInfo;
+import xiaomi.mich.com.android_togethermap.together.MapTogetherManager;
 import xiaomi.mich.com.android_togethermap.utils.DisplayUtil;
 
 public class MainActivity extends AppCompatActivity {
+
+    public static final String TAG = MainActivity.class.getSimpleName();
+    /**
+     * 地图初始化比例尺,地图比例尺
+     */
+    public static float ORGZOON = 14;
+    public static float INTZOOM = 14;
+
     private MapView mapView;
     private AMap aMap;
+    private List<DotInfo> dotList = new ArrayList<>();
+    /**
+     * marker数据集合
+     */
+    public Map<String, Marker> markerMap = new ConcurrentHashMap<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
         if (aMap == null) {
             aMap = mapView.getMap();
         }
+
+        aMap.setOnCameraChangeListener(onCameraChangeListener);
+
+        dotList.clear();
+        dotList = DotInfo.initData();
     }
 
     /**
@@ -57,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         mapView.onResume();
 
-        initMarker(DotInfo.initData());
+        initMarker(dotList);
     }
 
     /**
@@ -89,6 +113,90 @@ public class MainActivity extends AppCompatActivity {
 
 
     /**
+     * 设置地图移动监听
+     */
+    private AMap.OnCameraChangeListener onCameraChangeListener = new AMap.OnCameraChangeListener() {
+        @Override
+        public void onCameraChange(CameraPosition cameraPosition) {
+            INTZOOM = cameraPosition.zoom;
+        }
+
+        @Override
+        public void onCameraChangeFinish(CameraPosition cameraPosition) {
+            // 放大缩小完成后对聚合点进行重新计算
+            updateMapMarkers(null, false);
+        }
+    };
+
+    private synchronized void updateMapMarkers(DotInfo selectDotInfo, boolean isNeedUpdateContent) {
+        if (dotList != null && dotList.size() > 0) {
+            Log.i(TAG, "执行更新网点图标动作");
+            Log.i(TAG, "地图级别:" + aMap.getCameraPosition().zoom);
+            // 若当前地图级别小于初始化比例尺,则显示聚合网点
+            if (aMap.getCameraPosition().zoom < ORGZOON) {
+                updateTogMarkers();
+            }
+            // 显示普通marker
+            else {
+                updateNormalMarkers();
+            }
+
+            System.gc();
+        } else {
+            Log.i(TAG, "网点列表为null");
+        }
+    }
+
+
+    /**
+     * 更新普通网点数据
+     */
+    private void updateNormalMarkers() {
+        // 判断上一次更新marker操作的操作类型,若上次显示的是聚合网点,则先清空地图,然后清空网点信息,在刷新地图marker
+        aMap.clear();
+        markerMap.clear();
+
+        dotList = DotInfo.initData();
+
+        // 若网点数据有更新和添加,则更新和添加网点信息
+        for (DotInfo dotInfo : dotList) {
+            MarkerOptions options = new MarkerOptions();
+            options.anchor(0.5f, 1.0f);
+            options.position(new LatLng(dotInfo.getDotLat(), dotInfo.getDotLon()));
+            setIconToOptions(dotInfo, options);
+
+            Marker marker = aMap.addMarker(options);
+            marker.setObject(dotInfo);
+            marker.setZIndex(ORGZOON);
+
+            markerMap.put(dotInfo.getDotId(), marker);
+        }
+    }
+
+
+    /**
+     * 更新聚合网点
+     * @param isNeedUpdateContent
+     */
+    private void updateTogMarkers() {
+
+        Log.i(TAG, "开始显示聚合网点,清空地图normal marker...");
+        aMap.clear();
+        // 更新聚合marker
+        MapTogetherManager.getInstance(this, aMap).onMapLoadedUpdateMarker(markerMap);
+
+        // 设置marker点击事件,若是聚合网点此时点击marker则放大地图显示正常网点
+        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                // 初始化地图按指定的比例尺移动到定位的坐标
+                aMap.animateCamera(CameraUpdateFactory.newCameraPosition(new CameraPosition(marker.getPosition(), ORGZOON, 3, 0)), 1000, null);
+                return true;
+            }
+        });
+    }
+
+    /**
      * 初始化marker数据
      */
     private void initMarker(List<DotInfo> dotList) {
@@ -107,7 +215,9 @@ public class MainActivity extends AppCompatActivity {
 
             Marker marker = aMap.addMarker(options);
             marker.setObject(dotInfo);
-            marker.setZIndex(14);
+            marker.setZIndex(ORGZOON);
+
+            markerMap.put(dotInfo.getDotId(), marker);
         }
     }
 
