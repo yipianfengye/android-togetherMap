@@ -9,33 +9,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_margin="10dp"
-        android:layout_alignTop="@id/map">
-        <Button
-            android:id="@+id/basicmap"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:text="标准地图"/>
-        <Button
-            android:id="@+id/rsmap"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:gravity="center"
-            android:textColor="@android:color/black"
-            android:text="卫星地图"/>
-        <Button
-            android:id="@+id/nightmap"
-            android:layout_width="80dp"
-            android:layout_height="40dp"
-            android:textColor="@android:color/black"
-            android:gravity="center"
-            android:text="夜间模式"/>
-
-    </LinearLayout>
 </RelativeLayout>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/iv_marker"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/ic_location_normal" />
+
+    <TextView
+        android:id="@+id/tv_marker_number"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginLeft="33dp"
+        android:background="@drawable/marker_num_nonumber_bg"
+        android:text="0"
+        android:textColor="#ffffff"
+        android:gravity="center"
+        android:textSize="14dp" />
+
+
+</RelativeLayout>
