@@ -34,19 +34,25 @@ import xiaomi.mich.com.android_togethermap.utils.DisplayUtil;
 public class MainActivity extends AppCompatActivity {
 
     public static final String TAG = MainActivity.class.getSimpleName();
-    /**
-     * 地图初始化比例尺,地图比例尺
-     */
-    public static float ORGZOON = 14;
-    public static float INTZOOM = 14;
 
     private MapView mapView;
     private AMap aMap;
+    /**
+     * 地图初始化比例尺,地图比例尺
+     */
+    public static float ORGZOON = 10;
+    /**
+     * 数据列表
+     */
     private List<DotInfo> dotList = new ArrayList<>();
     /**
      * marker数据集合
      */
     public Map<String, Marker> markerMap = new ConcurrentHashMap<>();
+
+    public static final int MARKER_NORMA = 1;
+    public static final int MARKER_TOGE = 2;
+    public static int markerStatus = MARKER_NORMA;
 
 
     @Override
@@ -118,27 +124,29 @@ public class MainActivity extends AppCompatActivity {
     private AMap.OnCameraChangeListener onCameraChangeListener = new AMap.OnCameraChangeListener() {
         @Override
         public void onCameraChange(CameraPosition cameraPosition) {
-            INTZOOM = cameraPosition.zoom;
         }
 
         @Override
         public void onCameraChangeFinish(CameraPosition cameraPosition) {
             // 放大缩小完成后对聚合点进行重新计算
-            updateMapMarkers(null, false);
+            updateMapMarkers();
         }
     };
 
-    private synchronized void updateMapMarkers(DotInfo selectDotInfo, boolean isNeedUpdateContent) {
+    private synchronized void updateMapMarkers() {
         if (dotList != null && dotList.size() > 0) {
-            Log.i(TAG, "执行更新网点图标动作");
             Log.i(TAG, "地图级别:" + aMap.getCameraPosition().zoom);
             // 若当前地图级别小于初始化比例尺,则显示聚合网点
             if (aMap.getCameraPosition().zoom < ORGZOON) {
-                updateTogMarkers();
+                 markerStatus = MARKER_TOGE;
+                 updateTogMarkers();
             }
             // 显示普通marker
             else {
-                updateNormalMarkers();
+                if (markerStatus == MARKER_TOGE) {
+                    markerStatus = MARKER_NORMA;
+                    updateNormalMarkers();
+                }
             }
 
             System.gc();
@@ -176,7 +184,6 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * 更新聚合网点
-     * @param isNeedUpdateContent
      */
     private void updateTogMarkers() {
 

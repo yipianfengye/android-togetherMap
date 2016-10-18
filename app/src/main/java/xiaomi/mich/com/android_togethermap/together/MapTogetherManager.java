@@ -68,7 +68,6 @@ public class MapTogetherManager {
     /**
      * 更新聚合网点显示
      * @param markerMap
-     * TODO 地图页面轮训更新聚合网点text内容
      */
     public void onMapLoadedUpdateMarkerText(final List<DotInfo> allDotsList, final Map<String, Marker> markerMap) {
         // 循环遍历更新聚合marker显示文案
