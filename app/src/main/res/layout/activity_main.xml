@@ -1,17 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_main"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/activity_vertical_margin"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="xiaomi.mich.com.android_togethermap.MainActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <com.amap.api.maps.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:orientation="horizontal"
+        android:layout_margin="10dp"
+        android:layout_alignTop="@id/map">
+        <Button
+            android:id="@+id/basicmap"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="标准地图"/>
+        <Button
+            android:id="@+id/rsmap"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:textColor="@android:color/black"
+            android:text="卫星地图"/>
+        <Button
+            android:id="@+id/nightmap"
+            android:layout_width="80dp"
+            android:layout_height="40dp"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:text="夜间模式"/>
+
+    </LinearLayout>
 </RelativeLayout>
