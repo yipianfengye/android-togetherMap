@@ -217,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
         TextView textView = (TextView) view.findViewById(R.id.tv_marker_number);
         textView.setText("1");
         textView.setBackgroundResource(R.drawable.marker_num_nonumber_bg);
-        imageView.setImageResource(R.drawable.ic_location_normal);
+        imageView.setImageResource(R.mipmap.ic_launcher);
 
         options.icon(BitmapDescriptorFactory.fromView(view));
     }
