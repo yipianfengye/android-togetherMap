@@ -324,7 +324,7 @@ private synchronized void updateMapMarkers() {
 
 **总结：**
 
-本文主要是通过自定义的地图Marker的聚合算法，实现了Marker对象的聚合功能，这里定制化内容较多就不做成库了，具体可参考我的：<a href="https://github.com/yipianfengye/android-togetherMap">android-togetherMap</a>。
+本文主要是通过自定义的地图Marker的聚合算法，实现了Marker对象的聚合功能，这里定制化内容较多就不做成库了，具体可参考我的：<a href="https://github.com/yipianfengye/android-togetherMap">android-togetherMap</a>。另外也可参考我的博客：<a href="http://blog.csdn.net/qq_23547831/article/details/52063010">快速实现自定义地图聚合操作</a>
 
 
 
